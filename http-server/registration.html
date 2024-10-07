@@ -1,0 +1,225 @@
+<html></html>
+  <head>
+    <title>Registration Form</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
+      rel="stylesheet"
+    />
+    <style type="text/tailwindcss">
+      body {
+        @apply font-['Montserrat'];
+      }
+      .input-box {
+        @apply border-2 rounded-md px-2 focus:invalid:border-red-700;
+      }
+      .ta {
+        @apply border-2 px-4 py-3;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      class="flex flex-col gap-14 justify-center items-center min-h-screen bg-gray-100 py-14"
+    >
+      <div class="bg-white h-fit p-[25px] rounded-lg w-[400px]">
+        <h1 class="text-3xl font-bold text-center mb-4">Registration Form</h1>
+        <form id="form" class="m-0 flex flex-col">
+          <label for="name" class=""> Name </label>
+          <input
+            required
+            type="text"
+            id="name"
+            name="name"
+            class="input-box"
+            placeholder="Enter name"
+          />
+          <br />
+          <label for="email">Email</label>
+          <input
+            required
+            type="email"
+            id="email"
+            name="email"
+            class="input-box"
+            placeholder="Enter email"
+          />
+          <br />
+
+          <label for="password">Password</label>
+          <input
+            required
+            type="password"
+            id="password"
+            name="password"
+            class="input-box"
+            placeholder="Enter password"
+          />
+          <br />
+
+          <label for="dob">Date of Birth</label>
+          <input required type="date" id="dob" name="dob" class="input-box" />
+          <br />
+          <div class="flex gap-3 items-center">
+            <input
+              required
+              type="checkbox"
+              id="acceptTerms"
+              name="acceptTerms"
+              class="input-box py-2"
+            />
+            <label for="acceptTerms">Accept Terms & Conditions</label>
+          </div>
+
+          <br />
+
+          <button
+            type="submit"
+            class="bg-emerald-600 text-white font-semibold py-2 rounded-md hover:bg-emerald-800 focus:scale-95 transition-all duration-500 ease-out"
+          >
+            Submit
+          </button>
+        </form>
+      </div>
+      <div class="bg-white rounded-lg h-fit w-fit">
+        <h2 class="text-2xl font-bold text-center mt-4 mb-4">Entries</h2>
+        <div id="user-entries"></div>
+      </div>
+    </div>
+    <script>
+        const email = document.getElementById("email");
+        email.addEventListener("input", () => Validate(email));
+
+function Validate(element) {
+  if (element.validity.typeMismatch) {
+    element.setCustomValidity("Enter email in the correct format");
+    element.reportValidity();
+  } else {
+    element.setCustomValidity("");
+  }
+}
+
+const form = document.getElementById("form");
+
+const retrieveEntries = () => {
+  let entries = localStorage.getItem("user-entries");
+  if (entries) {
+    entries = JSON.parse(entries);
+  } else {
+    entries = [];
+  }
+  return entries;
+};
+
+let userenteries = retrieveEntries();
+
+const display = () => {
+  const entries = retrieveEntries();
+  const tableentries = entries
+    .map((entry) => {
+      const namecell = `<td class = "ta">${entry.name}</td>`;
+      const emailcell = `<td class = "ta">${entry.email}</td>`;
+      const passcell = `<td class = "ta">${entry.password}</td>`;
+      const dobcell = `<td class = "ta">${entry.dob}</td>`;
+      const termscell = `<td class = "ta">${entry.acceptTerms}</td>`;
+
+      const row = `<tr>
+          ${namecell} ${emailcell} ${passcell} ${dobcell} ${termscell}
+        </tr>`;
+      return row;
+    })
+    .join("\n");
+
+  const table = `<table class="table-auto w-fit m-4">
+      <tr>
+        <th class = "ta">Name</th>
+        <th class = "ta">Email</th>
+        <th class = "ta">Password</th>
+        <th class = "ta">DOB</th>
+        <th class = "ta">Accepted Terms?</th>
+      </tr>
+      ${tableentries}
+    </table>`;
+
+  let details = document.getElementById("user-entries");
+  details.innerHTML = table;
+};
+
+const saveentries = (event) => {
+  event.preventDefault();
+  const name = document.getElementById("name").value;
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+  const dob = document.getElementById("dob").value;
+  const acceptTerms = document.getElementById("acceptTerms").checked;
+
+  const entry = {
+    name,
+    email,
+    password,
+    dob,
+    acceptTerms,
+  };
+
+  userenteries.push(entry);
+
+  localStorage.setItem("user-entries", JSON.stringify(userenteries));
+
+  form.reset();
+  display();
+};
+
+form.addEventListener("submit", saveentries);
+display();
+
+const dateob = document.getElementById("dob");
+
+const checkdob = (element) => {
+  let today = new Date();
+  let day = today.getDate();
+  let month = today.getMonth() + 1;
+  let year = today.getFullYear();
+  let maxyear = year - 18;
+  let minyear = year - 55;
+
+  if (month < 10) month = "0" + month;
+  if (day < 10) day = "0" + day;
+
+  let maxDate = `${maxyear}-${month}-${day}`;
+  let minDate = `${minyear}-${month}-${day}`;
+
+  let dobValue = element.value;
+
+  if (dobValue) {
+    if (dobValue > maxDate || dobValue < minDate) {
+      element.setCustomValidity(
+        "Date of birth must be between " + minDate + " and " + maxDate + "."
+      );
+    } else {
+      element.setCustomValidity("");
+    }
+  } else {
+    element.setCustomValidity("");
+  }
+
+  element.reportValidity();
+  element.setAttribute("max", maxDate);
+  element.setAttribute("min", minDate);
+};
+
+dateob.addEventListener("input", () => checkdob(dateob));
+
+const formdob = document.querySelector("form");
+if (formdob) {
+  formdob.addEventListener("submit", (event) => {
+    if (!dateob.checkValidity()) {
+      event.preventDefault();
+      dateob.reportValidity();
+    }
+  });
+}
+    </script>
+  </body>
+</html>

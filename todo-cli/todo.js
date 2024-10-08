@@ -54,7 +54,11 @@ const todoList = () => {
     // as per the format given above.
     let text = "";
     list.forEach((item) => {
-      text += `${item.check} ${item.title} ${item.dueDate}\n`;
+      if (item.dueDate == today) {
+        text += `${item.check} ${item.title}\n`;
+      } else {
+        text += `${item.check} ${item.title} ${item.dueDate}\n`;
+      }
     });
     return text;
   };

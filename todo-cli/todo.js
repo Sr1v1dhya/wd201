@@ -60,7 +60,7 @@ const todoList = () => {
         text += `${item.check} ${item.title} ${item.dueDate}\n`;
       }
     });
-    return text;
+    return text.slice(0, text.length - 1);
   };
 
   return {

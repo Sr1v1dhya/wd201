@@ -13,7 +13,7 @@ const todoList = () => {
     let over = [];
     for (var i = 0; i < all.length; i++) {
       if (all[i].completed == true) {
-        all[i].check = "[X]";
+        all[i].check = "[x]";
       } else if (all[i].completed == false) {
         all[i].check = "[ ]";
       }
